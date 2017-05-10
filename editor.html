@@ -1,0 +1,32 @@
+<html>
+<head><title>The BD Race Map Editor</title></head>
+<body style = "margin: 0px; padding: 0px">
+<canvas id = "canvas" width = "800" height = "800"></canvas>
+<div style = "display: none">
+<img id = "tile_" src = "assets/minecraft/textures/blocks/cobblestone.png">
+<img id = "bg_" src = "assets/minecraft/textures/blocks/greengrass_top.png">
+<img id = "capsule_" src = "assets/minecraft/textures/items/ender_eye.png">
+</div>
+<script src = "jquery-1.11.0.min.js" type = "text/javascript"></script>
+<script type = "text/javascript">
+var points = [[0, -500], [0, 0], [0, 500]];
+var ctx = document.getElementById("canvas").getContext("2d");
+
+function updateCanvas(){
+
+}
+
+function onClick(event){
+     var coord = [event.pageX, event.pageY];
+     if (event.touches != null){if (event.touches[0] != null){cord = [event.touches[0].pageX, event.touches[0].pageY]}}
+     points.push(coord);
+}
+
+$(window).resize(function(){
+     document.getElementById("canvas").width = document.body.clientWidth;
+     document.getElementById("canvas").height = document.body.clientHeight;
+})
+$("#canvas").bind("click touchstart", onClick);
+</script>
+</body>
+</html>
