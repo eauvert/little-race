@@ -1,20 +1,38 @@
-<style type = "text/css">
-@font-face{font-family: ostrich; src: url(assets/font/ostrich_black.ttf)}
-a{color: #DDDDDD}
-a:hover{color: #000000}
-</style>
+<!-- DO NOT USE DOCTYPE, yet -->
 <html>
 <head>
 <title>The Little Race</title>
 <meta name = "viewport" content = "width = device-width, user-scalable = no">
+<style type = "text/css">
+@font-face{font-family: ostrich; src: url(assets/font/ostrich_black.ttf)}
+a{color: #DDDDDD; cursor: pointer}
+a:hover{color: #000000}
+
+body{background-color: #DEDEDE; margin: 0; padding: 0}
+li{list-style-type: none}
+input[type=text]{background-color: transparent; font-weight: bold; border: none; width: auto}
+
+.navigation{color: #000000; font-family: ostrich, sans-serif; font-size: 36px}
+.circle{background-color: #40E0D0; border-radius: 150px; margin: -150px -150px; position: fixed; left: 50%; top: 50%; transform: scale(1); transition: transform .5s ease-in, background-color .5s linear; width: 300px; height: 300px}
+
+#canvas{margin: 0; position: fixed; left: 0; top: 0}
+#posGUI_{position: fixed; left: 50px; top: 20px}
+#timeGUI_{position: fixed; left: 50px; top: 60px}
+#speedGUI_{position: fixed; left: 50px; top: 100px}
+#itemGUI_{position: fixed; left: 50px; top: 140px}
+#pauseGUI_{display: none; position: fixed; right: 50px; top: 20px}
+#page{background-color: transparent /*#CCCCCC*/; display: block; margin: -125px 0 0 -125px; position: fixed; left: 50%; top: 50%; width: 250px; height: 250px}
+</style>
 </head>
-<body onmousedown = "onDown(event)" onmouseup = "onUp(event)" onmousemove = "onMove(event)" ondragstart = "onDown(event)" ondrag = "onMove(event)" ontouchstart = "if (window.touch == false){window.touch = true}; onDown(event)" ontouchmove = "onMove(event)" ontouchend = "if (window.touch == true){window.touch = false}; onUp(event)" style = "background-color: #DDDDDD; margin: 0px; padding: 0px">
-<canvas id = "canvas" width = 800 height = 400 style = "margin: 0px 0px 0px 0px; position: fixed; left: 0px; top: 0px">Please use a browser that supports the canvas element.</canvas>
+<body>
+<div class = "circle"></div>
+<canvas id = "canvas" width = "800" height = "400">Please use a browser that fully supports HTML5.</canvas>
 <div>
-<canvas class = "gui" id = "posGUI_" width = 300 height = 40 style = "position: fixed; left: 50px; top: 20px"></canvas>
-<canvas class = "gui" id = "timeGUI_" width = 300 height = 40 style = "position: fixed; left: 50px; top: 60px"></canvas>
-<canvas class = "gui" id = "speedGUI_" width = 300 height = 40 style = "position: fixed; left: 50px; top: 100px"></canvas>
-<canvas class = "gui" id = "itemGUI_" width = 300 height = 40 style = "position: fixed; left: 50px; top: 140px"></canvas>
+<canvas class = "gui" id = "posGUI_" width = 300 height = 40></canvas>
+<canvas class = "gui" id = "timeGUI_" width = 300 height = 40></canvas>
+<canvas class = "gui" id = "speedGUI_" width = 300 height = 40></canvas>
+<canvas class = "gui" id = "itemGUI_" width = 300 height = 40></canvas>
+<canvas class = "gui" id = "pauseGUI_" width = 40 height = 40 onclick = "if (pause == false){pause = true} else {pause = false}"></canvas>
 </div>
 <div style = "display: none">
 <a style = "font-family: ostrich">Ostrich</a>
@@ -41,18 +59,19 @@ a:hover{color: #000000}
 <audio class = "asset" id = "glass3_" src = "assets/glass3.mp3" type = "audio/mpeg"></audio>
 <audio class = "asset" id = "death_" src = "assets/death.mp3" type = "audio/mpeg"></audio>
 </div>
-<div id = "page" style = "background-color: #AAAAAA; border: 1px solid; display: block; color: #DDDDDD; font-family: ostrich; font-size: 36px; margin: -150px 0px 0px -150px; position: fixed; left: 50%; top: 50%; width: 300px">
-<screen id = "screen0">The Little Race<br><br>&nbsp;&nbsp;<a onclick = "this.offsetParent.style.display = 'none'; newVars(); initialize()">Start Demo</a></screen>
-<div style = "display: none">
-<screen id = "screen1">Main Menu<br><br>&nbsp;&nbsp;<a>Career</a><br>&nbsp;&nbsp;<a>Arcade/Build</a><br>&nbsp;&nbsp;<a>Settings</a></screen>
-<screen id = "screen2">Career<br><br>&nbsp;&nbsp;<a>How to Play</a><br><br>&nbsp;&nbsp;<a>Easy (.3)</a><br>&nbsp;&nbsp;<a>Medium (.4)</a><br>&nbsp;&nbsp;<a>Hard (.7)</a><br>&nbsp;&nbsp;<a>Impossibru (.9999)</a></screen>
-<screen id = "screen3">Arcade/Build<br><br>&nbsp;&nbsp;<a>How to Play</a><br><br>&nbsp;&nbsp;<a>Time Attack</a><br>&nbsp;&nbsp;<a>Paparazzi</a><br>&nbsp;&nbsp;<a>Make a Map</a></screen>
+<div id = "page">
+<ul>
+<li><a class = "navigation" id = "demo">Play Demo</a></li>
+<li><a class = "navigation">Grand Prix</a></li>
+<li><a class = "navigation">Tutorial</a></li>
+<li><a class = "navigation">Map Maker</a></li>
+</ul>
 </div>
-</div>
-<div style = "font-size: 2em; position: fixed; right: 0px; bottom: 0px"><input type = "text" id = "text1" readonly = "true"><input type = "text" id = "text2" readonly = "true"><input type = "text" id = "text3" readonly = "true"><input type = "text" id = "text4" readonly = "true"><input type = "checkbox" id = "check"></div>
+<div style = "font-size: 2em; position: fixed; right: 0; bottom: 0"><input type = "text" id = "text1" readonly = "true"><input type = "text" id = "text2" readonly = "true"><input type = "text" id = "text3" readonly = "true"><input type = "text" id = "text4" readonly = "true"><input type = "text" id = "text5" readonly = "true"><input type = "checkbox" id = "check"></div>
 <!--<script src = "jriecken-sat-js-3068450/SAT.min.js" type = "text/javascript"></script>-->
 <script src = "jquery-1.11.0.min.js" type = "text/javascript"></script>
 <script src = "tracks.js" type = "text/javascript"></script>
 <script src = "race.js" type = "text/javascript"></script>
+<script src = "colorchanger.js" type = "text/javascript"></script>
 </body>
 </html>
